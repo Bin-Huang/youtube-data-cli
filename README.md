@@ -76,9 +76,12 @@ For write operations and private data:
 2. Create a project and enable the **YouTube Data API v3**.
 3. Create an **OAuth 2.0 Client ID** (Desktop app type) under "Credentials".
 4. Use the [OAuth 2.0 Playground](https://developers.google.com/oauthplayground/) or your own flow to obtain a refresh token with the required scopes:
-   - `https://www.googleapis.com/auth/youtube` (full access)
-   - or `https://www.googleapis.com/auth/youtube.readonly` (read-only)
-   - or `https://www.googleapis.com/auth/youtube.force-ssl` (for comments)
+   - `https://www.googleapis.com/auth/youtube` -- recommended, covers all operations
+   - `https://www.googleapis.com/auth/youtube.upload` -- add this if using a narrower scope but need video uploads
+
+   Narrower scopes (if you don't need full access):
+   - `https://www.googleapis.com/auth/youtube.readonly` -- read-only access (no write operations)
+   - `https://www.googleapis.com/auth/youtube.force-ssl` -- videos, comments, captions, ratings (read + write)
 
 > **Note:** Service accounts do NOT work with YouTube APIs. You must use OAuth 2.0 with a refresh token.
 
@@ -112,6 +115,8 @@ Credentials are resolved in this order:
 1. `--credentials <path>` flag
 2. `YOUTUBE_API_KEY`, `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN` env vars
 3. `~/.config/youtube-data-cli/credentials.json` (auto-detected)
+
+> **Tip:** If you also use [youtube-analytics-cli](https://github.com/Bin-Huang/youtube-analytics-cli), the environment variable names are the same, so credentials set via env vars are shared automatically between both CLIs.
 
 ## Usage
 
