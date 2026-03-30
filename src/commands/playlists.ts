@@ -20,7 +20,7 @@ export function registerPlaylistCommands(program: Command): void {
           part: opts.part,
           maxResults: opts.maxResults,
         };
-        const requireOAuth = !!opts.mine;
+        const requireOAuth = !!opts.mine || (!opts.id && !opts.channelId);
         if (opts.id) {
           params.id = opts.id;
         } else if (opts.channelId) {

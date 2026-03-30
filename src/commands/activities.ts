@@ -21,7 +21,7 @@ export function registerActivityCommands(program: Command): void {
           part: opts.part,
           maxResults: opts.maxResults,
         };
-        const requireOAuth = !!opts.mine;
+        const requireOAuth = !!opts.mine || !opts.channelId;
         if (opts.channelId) {
           params.channelId = opts.channelId;
         } else {

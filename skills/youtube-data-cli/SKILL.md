@@ -37,8 +37,8 @@ npm install -g youtube-data-cli
 
 | Method | Use case | Commands |
 |--------|----------|----------|
-| **API key** | Public data (search, channels, videos, playlists, comments) | Read-only commands |
-| **OAuth 2.0** | Private data + write operations | All `*-insert`, `*-update`, `*-delete` commands, `--mine` queries |
+| **API key** | Public data | `search`, `channels`, `videos`, `playlists`, `playlist-items`, `comment-threads`, `comments`, `channel-sections`, `i18n-*`, `video-categories`, `video-abuse-report-reasons` |
+| **OAuth 2.0** | Private data + write operations | All `*-insert`/`*-update`/`*-delete` commands, `--mine` queries, `captions`, `members`, `memberships-levels`, `playlist-images`, `thumbnails-set`, `watermarks-*`, `channel-banners-insert` |
 
 Credentials are resolved in this order:
 

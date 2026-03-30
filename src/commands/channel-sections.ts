@@ -18,7 +18,7 @@ export function registerChannelSectionCommands(program: Command): void {
         const params: Record<string, string> = {
           part: opts.part,
         };
-        const requireOAuth = !!opts.mine;
+        const requireOAuth = !!opts.mine || (!opts.id && !opts.channelId);
         if (opts.id) {
           params.id = opts.id;
         } else if (opts.channelId) {

@@ -57,8 +57,8 @@ This CLI supports two authentication methods:
 
 | Method | Use case | Commands |
 |--------|----------|----------|
-| **API key** | Public data (search, channels, videos, playlists, comments) | Read-only commands |
-| **OAuth 2.0** | Private data + write operations | All commands (required for `*-insert`, `*-update`, `*-delete`, `mine` queries) |
+| **API key** | Public data | `search`, `channels`, `videos`, `playlists`, `playlist-items`, `comment-threads`, `comments`, `channel-sections`, `i18n-languages`, `i18n-regions`, `video-categories`, `video-abuse-report-reasons` |
+| **OAuth 2.0** | Private data + write operations | All `*-insert`, `*-update`, `*-delete` commands, `--mine` queries, `captions`, `members`, `memberships-levels`, `playlist-images`, `thumbnails-set`, `watermarks-*`, `channel-banners-insert` |
 
 ### Option 1: API key only (public data)
 
