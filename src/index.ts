@@ -12,6 +12,17 @@ import { registerPlaylistItemCommands } from "./commands/playlist-items.js";
 import { registerCommentThreadCommands } from "./commands/comment-threads.js";
 import { registerCommentCommands } from "./commands/comments.js";
 import { registerSubscriptionCommands } from "./commands/subscriptions.js";
+import { registerActivityCommands } from "./commands/activities.js";
+import { registerCaptionCommands } from "./commands/captions.js";
+import { registerChannelBannerCommands } from "./commands/channel-banners.js";
+import { registerChannelSectionCommands } from "./commands/channel-sections.js";
+import { registerI18nCommands } from "./commands/i18n.js";
+import { registerMemberCommands } from "./commands/members.js";
+import { registerPlaylistImageCommands } from "./commands/playlist-images.js";
+import { registerThumbnailCommands } from "./commands/thumbnails.js";
+import { registerVideoCategoryCommands } from "./commands/video-categories.js";
+import { registerVideoAbuseReportReasonCommands } from "./commands/video-abuse-report-reasons.js";
+import { registerWatermarkCommands } from "./commands/watermarks.js";
 
 const program = new Command();
 
@@ -56,6 +67,17 @@ registerPlaylistItemCommands(program);
 registerCommentThreadCommands(program);
 registerCommentCommands(program);
 registerSubscriptionCommands(program);
+registerActivityCommands(program);
+registerCaptionCommands(program);
+registerChannelBannerCommands(program);
+registerChannelSectionCommands(program);
+registerI18nCommands(program);
+registerMemberCommands(program);
+registerPlaylistImageCommands(program);
+registerThumbnailCommands(program);
+registerVideoCategoryCommands(program);
+registerVideoAbuseReportReasonCommands(program);
+registerWatermarkCommands(program);
 
 program.on("command:*", (operands) => {
   process.stderr.write(

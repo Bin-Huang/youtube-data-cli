@@ -94,4 +94,30 @@ export function registerCommentCommands(program: Command): void {
         fatal((err as Error).message);
       }
     });
+
+  program
+    .command("comments-set-moderation-status")
+    .description("Set moderation status of comments (OAuth required)")
+    .requiredOption("--id <ids>", "Comment ID(s), comma-separated")
+    .requiredOption("--moderation-status <status>", "Status: published, heldForReview, rejected")
+    .option("--ban-author", "Ban the comment author from making future comments")
+    .action(async (opts) => {
+      try {
+        const creds = loadCredentials(program.opts().credentials);
+        const params: Record<string, string> = {
+          id: opts.id,
+          moderationStatus: opts.moderationStatus,
+        };
+        if (opts.banAuthor) params.banAuthor = "true";
+        const data = await callApi("/comments/setModerationStatus", {
+          creds,
+          params,
+          method: "POST",
+          requireOAuth: true,
+        });
+        output(data, program.opts().format);
+      } catch (err) {
+        fatal((err as Error).message);
+      }
+    });
 }

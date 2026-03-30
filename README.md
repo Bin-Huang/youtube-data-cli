@@ -1,6 +1,6 @@
 # youtube-data-cli
 
-YouTube Data API CLI for AI agents (and humans). Search videos, manage playlists, read and post comments, handle subscriptions, and more.
+YouTube Data API CLI for AI agents (and humans). Full coverage of the YouTube Data API v3: search, channels, videos, playlists, comments, subscriptions, captions, thumbnails, and more.
 
 **Works with:** OpenClaw, Claude Code, Cursor, Codex, and any agent that can run shell commands.
 
@@ -25,16 +25,29 @@ Or run directly: `npx youtube-data-cli --help`
 
 Built on the official [YouTube Data API v3](https://developers.google.com/youtube/v3). Uses native `fetch` with no external dependencies beyond `commander`. Every command outputs structured JSON to stdout, ready for agents to parse without extra processing.
 
-Core endpoints covered:
+All 20 YouTube Data API v3 resources covered:
 
 - **[Search](https://developers.google.com/youtube/v3/docs/search/list)** -- search for videos, channels, and playlists
-- **[Channels](https://developers.google.com/youtube/v3/docs/channels/list)** -- get channel details and statistics
-- **[Videos](https://developers.google.com/youtube/v3/docs/videos/list)** -- get video details and statistics
-- **[Playlists](https://developers.google.com/youtube/v3/docs/playlists)** -- list, create, update, and delete playlists
+- **[Channels](https://developers.google.com/youtube/v3/docs/channels)** -- get and update channel details
+- **[Videos](https://developers.google.com/youtube/v3/docs/videos)** -- get, upload, update, delete, rate videos
+- **[Playlists](https://developers.google.com/youtube/v3/docs/playlists)** -- CRUD playlists
 - **[PlaylistItems](https://developers.google.com/youtube/v3/docs/playlistItems)** -- manage videos in playlists
+- **[PlaylistImages](https://developers.google.com/youtube/v3/docs/playlistImages)** -- manage playlist cover images
 - **[CommentThreads](https://developers.google.com/youtube/v3/docs/commentThreads)** -- list and post top-level comments
-- **[Comments](https://developers.google.com/youtube/v3/docs/comments)** -- list, reply, update, and delete comments
+- **[Comments](https://developers.google.com/youtube/v3/docs/comments)** -- CRUD comments, set moderation status
 - **[Subscriptions](https://developers.google.com/youtube/v3/docs/subscriptions)** -- list, subscribe, and unsubscribe
+- **[Activities](https://developers.google.com/youtube/v3/docs/activities)** -- list channel activities
+- **[Captions](https://developers.google.com/youtube/v3/docs/captions)** -- list, upload, download, update, delete captions
+- **[ChannelBanners](https://developers.google.com/youtube/v3/docs/channelBanners)** -- upload channel banner images
+- **[ChannelSections](https://developers.google.com/youtube/v3/docs/channelSections)** -- CRUD channel sections
+- **[I18nLanguages](https://developers.google.com/youtube/v3/docs/i18nLanguages)** -- list supported languages
+- **[I18nRegions](https://developers.google.com/youtube/v3/docs/i18nRegions)** -- list supported regions
+- **[Members](https://developers.google.com/youtube/v3/docs/members)** -- list channel members
+- **[MembershipsLevels](https://developers.google.com/youtube/v3/docs/membershipsLevels)** -- list membership levels
+- **[Thumbnails](https://developers.google.com/youtube/v3/docs/thumbnails)** -- upload video thumbnails
+- **[VideoCategories](https://developers.google.com/youtube/v3/docs/videoCategories)** -- list video categories
+- **[VideoAbuseReportReasons](https://developers.google.com/youtube/v3/docs/videoAbuseReportReasons)** -- list abuse report reasons
+- **[Watermarks](https://developers.google.com/youtube/v3/docs/watermarks)** -- set and unset channel watermarks
 
 ## Setup
 
@@ -399,6 +412,303 @@ youtube-data-cli subscriptions-delete --id SUBSCRIPTION_ID
 
 Options:
 - `--id <id>` -- subscription ID (required)
+
+### channels-update
+
+Update a channel's metadata (OAuth required).
+
+```bash
+youtube-data-cli channels-update --id UCxxxxxxxxxxxxxx --description "New description"
+youtube-data-cli channels-update --id UCxxxxxxxxxxxxxx --country US --keywords "tech,coding"
+```
+
+Options:
+- `--id <id>` -- channel ID (required)
+- `--description <desc>` -- channel description
+- `--keywords <kw>` -- channel keywords
+- `--default-language <lang>` -- default language (ISO 639-1)
+- `--country <code>` -- country (ISO 3166-1 alpha-2)
+- `--made-for-kids <bool>` -- self-declared made for kids (true/false)
+
+### videos-insert
+
+Upload a video (OAuth required).
+
+```bash
+youtube-data-cli videos-insert --file video.mp4 --title "My Video"
+youtube-data-cli videos-insert --file video.mp4 --title "My Video" --description "About this" --tags "tag1,tag2" --privacy public
+```
+
+Options:
+- `--file <path>` -- path to video file (required)
+- `--title <title>` -- video title (required)
+- `--description <desc>` -- video description
+- `--tags <tags>` -- comma-separated tags
+- `--category-id <id>` -- video category ID (default: `22`)
+- `--privacy <status>` -- `public`, `private`, `unlisted` (default: `private`)
+- `--content-type <type>` -- video MIME type (default: `video/mp4`)
+
+### videos-update
+
+Update video metadata (OAuth required).
+
+```bash
+youtube-data-cli videos-update --id VIDEO_ID --title "Updated Title"
+youtube-data-cli videos-update --id VIDEO_ID --title "Title" --description "Desc" --tags "a,b" --privacy public
+```
+
+Options:
+- `--id <id>` -- video ID (required)
+- `--title <title>` -- video title (required)
+- `--description <desc>` -- video description
+- `--tags <tags>` -- comma-separated tags
+- `--category-id <id>` -- video category ID
+- `--privacy <status>` -- `public`, `private`, `unlisted`
+- `--default-language <lang>` -- default language (ISO 639-1)
+
+### videos-delete
+
+Delete a video (OAuth required).
+
+```bash
+youtube-data-cli videos-delete --id VIDEO_ID
+```
+
+### videos-rate
+
+Rate a video (OAuth required).
+
+```bash
+youtube-data-cli videos-rate --id VIDEO_ID --rating like
+youtube-data-cli videos-rate --id VIDEO_ID --rating none    # remove rating
+```
+
+Options:
+- `--id <id>` -- video ID (required)
+- `--rating <rating>` -- `like`, `dislike`, or `none` (required)
+
+### videos-get-rating
+
+Get your rating on videos (OAuth required).
+
+```bash
+youtube-data-cli videos-get-rating --id VIDEO_ID
+youtube-data-cli videos-get-rating --id VIDEO_ID1,VIDEO_ID2
+```
+
+### videos-report-abuse
+
+Report a video for abuse (OAuth required).
+
+```bash
+youtube-data-cli videos-report-abuse --video-id VIDEO_ID --reason-id REASON_ID
+```
+
+Options:
+- `--video-id <id>` -- video ID (required)
+- `--reason-id <id>` -- abuse reason ID (required)
+- `--secondary-reason-id <id>` -- secondary reason ID
+- `--comments <text>` -- additional comments
+
+### comments-set-moderation-status
+
+Set moderation status of comments (OAuth required).
+
+```bash
+youtube-data-cli comments-set-moderation-status --id COMMENT_ID --moderation-status published
+youtube-data-cli comments-set-moderation-status --id COMMENT_ID --moderation-status rejected --ban-author
+```
+
+Options:
+- `--id <ids>` -- comment ID(s), comma-separated (required)
+- `--moderation-status <status>` -- `published`, `heldForReview`, `rejected` (required)
+- `--ban-author` -- ban the author from future comments
+
+### activities
+
+List channel activities.
+
+```bash
+youtube-data-cli activities --channel-id UCxxxxxxxxxxxxxx
+youtube-data-cli activities --mine    # your activities (OAuth required)
+```
+
+Options:
+- `--channel-id <id>` -- channel ID
+- `--mine` -- list your activities (OAuth required)
+- `--part <parts>` -- parts to include (default: `snippet,contentDetails`)
+- `--max-results <n>` -- max results 1-50 (default: `25`)
+- `--page-token <token>` -- pagination token
+- `--published-after <datetime>` -- filter after date (RFC 3339)
+- `--published-before <datetime>` -- filter before date (RFC 3339)
+
+### captions
+
+List caption tracks for a video.
+
+```bash
+youtube-data-cli captions --video-id VIDEO_ID
+```
+
+### captions-insert
+
+Upload a caption track (OAuth required).
+
+```bash
+youtube-data-cli captions-insert --video-id VIDEO_ID --file subs.srt --language en --name "English"
+```
+
+Options:
+- `--video-id <id>` -- video ID (required)
+- `--file <path>` -- path to caption file (required)
+- `--language <lang>` -- caption language BCP-47 (required)
+- `--name <name>` -- caption track name (required)
+- `--content-type <type>` -- MIME type (default: `application/octet-stream`)
+- `--is-draft` -- mark as draft
+
+### captions-update
+
+Update a caption track (OAuth required).
+
+```bash
+youtube-data-cli captions-update --id CAPTION_ID --file new-subs.srt
+youtube-data-cli captions-update --id CAPTION_ID --is-draft false
+```
+
+### captions-download
+
+Download a caption track (OAuth required).
+
+```bash
+youtube-data-cli captions-download --id CAPTION_ID
+youtube-data-cli captions-download --id CAPTION_ID --tfmt srt --output subs.srt
+youtube-data-cli captions-download --id CAPTION_ID --tlang fr    # translated
+```
+
+Options:
+- `--id <id>` -- caption track ID (required)
+- `--tfmt <format>` -- format: `sbv`, `scc`, `srt`, `ttml`, `vtt`
+- `--tlang <lang>` -- translation language (BCP-47)
+- `--output <path>` -- save to file (default: stdout)
+
+### captions-delete
+
+Delete a caption track (OAuth required).
+
+```bash
+youtube-data-cli captions-delete --id CAPTION_ID
+```
+
+### channel-banners-insert
+
+Upload a channel banner image (OAuth required). Returns a URL to use with channels-update.
+
+```bash
+youtube-data-cli channel-banners-insert --file banner.jpg
+```
+
+Options:
+- `--file <path>` -- path to image file (required, max 6MB)
+- `--content-type <type>` -- MIME type (default: `image/jpeg`)
+
+### channel-sections / channel-sections-insert / channel-sections-update / channel-sections-delete
+
+Manage channel sections.
+
+```bash
+# List
+youtube-data-cli channel-sections --channel-id UCxxxxxxxxxxxxxx
+youtube-data-cli channel-sections --mine
+
+# Create (OAuth)
+youtube-data-cli channel-sections-insert --type singlePlaylist --title "Featured" --playlist-ids PLxxxxxxxxxxxxxx
+
+# Update (OAuth)
+youtube-data-cli channel-sections-update --id SECTION_ID --type singlePlaylist --title "Updated"
+
+# Delete (OAuth)
+youtube-data-cli channel-sections-delete --id SECTION_ID
+```
+
+### i18n-languages / i18n-regions
+
+List supported languages and regions.
+
+```bash
+youtube-data-cli i18n-languages
+youtube-data-cli i18n-languages --hl en
+youtube-data-cli i18n-regions
+youtube-data-cli i18n-regions --hl en
+```
+
+### members / memberships-levels
+
+List channel members and membership levels (OAuth required).
+
+```bash
+youtube-data-cli members
+youtube-data-cli members --max-results 100
+youtube-data-cli memberships-levels
+```
+
+### playlist-images / playlist-images-insert / playlist-images-update / playlist-images-delete
+
+Manage playlist cover images.
+
+```bash
+# List
+youtube-data-cli playlist-images --parent PLxxxxxxxxxxxxxx
+
+# Upload (OAuth)
+youtube-data-cli playlist-images-insert --playlist-id PLxxxxxxxxxxxxxx --file cover.jpg
+
+# Update (OAuth)
+youtube-data-cli playlist-images-update --id IMAGE_ID --playlist-id PLxxxxxxxxxxxxxx --file new-cover.jpg
+
+# Delete (OAuth)
+youtube-data-cli playlist-images-delete --id IMAGE_ID
+```
+
+### thumbnails-set
+
+Upload a custom thumbnail for a video (OAuth required).
+
+```bash
+youtube-data-cli thumbnails-set --video-id VIDEO_ID --file thumb.jpg
+```
+
+Options:
+- `--video-id <id>` -- video ID (required)
+- `--file <path>` -- path to image file (required)
+- `--content-type <type>` -- MIME type (default: `image/jpeg`)
+
+### video-categories
+
+List video categories.
+
+```bash
+youtube-data-cli video-categories
+youtube-data-cli video-categories --region-code JP --hl ja
+youtube-data-cli video-categories --id 1,2,10
+```
+
+### video-abuse-report-reasons
+
+List video abuse report reasons.
+
+```bash
+youtube-data-cli video-abuse-report-reasons
+youtube-data-cli video-abuse-report-reasons --hl en
+```
+
+### watermarks-set / watermarks-unset
+
+Manage channel watermarks (OAuth required).
+
+```bash
+youtube-data-cli watermarks-set --channel-id UCxxxxxxxxxxxxxx --file watermark.png
+youtube-data-cli watermarks-unset --channel-id UCxxxxxxxxxxxxxx
+```
 
 ## Error output
 
