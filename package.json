@@ -1,0 +1,50 @@
+{
+  "name": "youtube-data-cli",
+  "version": "1.0.0",
+  "description": "YouTube Data API CLI for AI agents",
+  "type": "module",
+  "bin": {
+    "youtube-data-cli": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepack": "pnpm build"
+  },
+  "author": "Benn Huang <tohuangbin@gmail.com>",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bin-Huang/youtube-data-cli.git"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "youtube",
+    "youtube-data-api",
+    "cli",
+    "ai-agent",
+    "api",
+    "search",
+    "playlists",
+    "comments",
+    "subscriptions"
+  ],
+  "packageManager": "pnpm@10.32.1",
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "commander": "^14.0.3"
+  },
+  "bugs": {
+    "url": "https://github.com/Bin-Huang/youtube-data-cli/issues"
+  },
+  "homepage": "https://github.com/Bin-Huang/youtube-data-cli#readme"
+}

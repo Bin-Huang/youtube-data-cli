@@ -1,0 +1,424 @@
+# youtube-data-cli
+
+YouTube Data API CLI for AI agents (and humans). Search videos, manage playlists, read and post comments, handle subscriptions, and more.
+
+**Works with:** OpenClaw, Claude Code, Cursor, Codex, and any agent that can run shell commands.
+
+## Installation
+
+Tell your AI agent (e.g. OpenClaw):
+
+> Install this CLI and skills from https://github.com/Bin-Huang/youtube-data-cli
+
+Or install manually:
+
+```bash
+npm install -g youtube-data-cli
+
+# Add skills for AI agents (Claude Code, Cursor, Codex, etc.)
+npx skills add Bin-Huang/youtube-data-cli
+```
+
+Or run directly: `npx youtube-data-cli --help`
+
+## How it works
+
+Built on the official [YouTube Data API v3](https://developers.google.com/youtube/v3). Uses native `fetch` with no external dependencies beyond `commander`. Every command outputs structured JSON to stdout, ready for agents to parse without extra processing.
+
+Core endpoints covered:
+
+- **[Search](https://developers.google.com/youtube/v3/docs/search/list)** -- search for videos, channels, and playlists
+- **[Channels](https://developers.google.com/youtube/v3/docs/channels/list)** -- get channel details and statistics
+- **[Videos](https://developers.google.com/youtube/v3/docs/videos/list)** -- get video details and statistics
+- **[Playlists](https://developers.google.com/youtube/v3/docs/playlists)** -- list, create, update, and delete playlists
+- **[PlaylistItems](https://developers.google.com/youtube/v3/docs/playlistItems)** -- manage videos in playlists
+- **[CommentThreads](https://developers.google.com/youtube/v3/docs/commentThreads)** -- list and post top-level comments
+- **[Comments](https://developers.google.com/youtube/v3/docs/comments)** -- list, reply, update, and delete comments
+- **[Subscriptions](https://developers.google.com/youtube/v3/docs/subscriptions)** -- list, subscribe, and unsubscribe
+
+## Setup
+
+### Authentication
+
+This CLI supports two authentication methods:
+
+| Method | Use case | Commands |
+|--------|----------|----------|
+| **API key** | Public data (search, channels, videos, playlists, comments) | Read-only commands |
+| **OAuth 2.0** | Private data + write operations | All commands (required for `*-insert`, `*-update`, `*-delete`, `mine` queries) |
+
+### Option 1: API key only (public data)
+
+For read-only access to public data:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a project and enable the **YouTube Data API v3**.
+3. Create an API key under "Credentials".
+
+### Option 2: OAuth 2.0 (full access)
+
+For write operations and private data:
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a project and enable the **YouTube Data API v3**.
+3. Create an **OAuth 2.0 Client ID** (Desktop app type) under "Credentials".
+4. Use the [OAuth 2.0 Playground](https://developers.google.com/oauthplayground/) or your own flow to obtain a refresh token with the required scopes:
+   - `https://www.googleapis.com/auth/youtube` (full access)
+   - or `https://www.googleapis.com/auth/youtube.readonly` (read-only)
+   - or `https://www.googleapis.com/auth/youtube.force-ssl` (for comments)
+
+> **Note:** Service accounts do NOT work with YouTube APIs. You must use OAuth 2.0 with a refresh token.
+
+### Place credentials
+
+Choose one of these options:
+
+```bash
+# Option A: Default path (recommended)
+mkdir -p ~/.config/youtube-data-cli
+cat > ~/.config/youtube-data-cli/credentials.json << EOF
+{
+  "api_key": "YOUR_API_KEY",
+  "client_id": "YOUR_CLIENT_ID",
+  "client_secret": "YOUR_CLIENT_SECRET",
+  "refresh_token": "YOUR_REFRESH_TOKEN"
+}
+EOF
+
+# Option B: Environment variables
+export YOUTUBE_API_KEY=your_api_key
+export YOUTUBE_CLIENT_ID=your_client_id
+export YOUTUBE_CLIENT_SECRET=your_client_secret
+export YOUTUBE_REFRESH_TOKEN=your_refresh_token
+
+# Option C: Pass per command
+youtube-data-cli --credentials /path/to/credentials.json search --q "test"
+```
+
+Credentials are resolved in this order:
+1. `--credentials <path>` flag
+2. `YOUTUBE_API_KEY`, `YOUTUBE_CLIENT_ID`, `YOUTUBE_CLIENT_SECRET`, `YOUTUBE_REFRESH_TOKEN` env vars
+3. `~/.config/youtube-data-cli/credentials.json` (auto-detected)
+
+## Usage
+
+All commands output pretty-printed JSON by default. Use `--format compact` for compact single-line JSON.
+
+### search
+
+Search YouTube for videos, channels, and playlists.
+
+```bash
+youtube-data-cli search --q "node.js tutorial"
+youtube-data-cli search --q "cooking" --type video --max-results 10
+youtube-data-cli search --q "live coding" --event-type live --type video
+youtube-data-cli search --q "music" --order viewCount --published-after 2026-01-01T00:00:00Z
+youtube-data-cli search --q "tech" --region-code US --relevance-language en
+```
+
+Options:
+- `--q <query>` -- search query (required)
+- `--type <type>` -- resource type: `video`, `channel`, `playlist` (default: `video,channel,playlist`)
+- `--max-results <n>` -- max results 1-50 (default: `5`)
+- `--order <order>` -- sort: `relevance`, `date`, `rating`, `title`, `videoCount`, `viewCount`
+- `--channel-id <id>` -- limit to a specific channel
+- `--page-token <token>` -- pagination token
+- `--published-after <datetime>` -- filter by publish date (RFC 3339)
+- `--published-before <datetime>` -- filter by publish date (RFC 3339)
+- `--region-code <code>` -- country code (ISO 3166-1 alpha-2)
+- `--relevance-language <lang>` -- language code (ISO 639-1)
+- `--safe-search <level>` -- `none`, `moderate`, `strict`
+- `--video-duration <duration>` -- `any`, `short`, `medium`, `long`
+- `--video-definition <def>` -- `any`, `high`, `standard`
+- `--video-type <type>` -- `any`, `episode`, `movie`
+- `--event-type <type>` -- `completed`, `live`, `upcoming`
+- `--topic-id <id>` -- Freebase topic ID
+- `--video-category-id <id>` -- video category ID
+
+### channels
+
+Get channel details. Omit ID to get the authenticated user's channel (requires OAuth).
+
+```bash
+youtube-data-cli channels UCxxxxxxxxxxxxxx
+youtube-data-cli channels                    # your own channel (OAuth required)
+youtube-data-cli channels UCxxxxxxxxxxxxxx --part snippet,statistics,brandingSettings
+```
+
+Options:
+- `--part <parts>` -- parts to include (default: `snippet,statistics,contentDetails`)
+
+### videos
+
+Get video details by IDs (comma-separated).
+
+```bash
+youtube-data-cli videos dQw4w9WgXcQ
+youtube-data-cli videos dQw4w9WgXcQ,jNQXAC9IVRw --part snippet,statistics,contentDetails
+```
+
+Options:
+- `--part <parts>` -- parts to include (default: `snippet,statistics,contentDetails`)
+
+### playlists
+
+List playlists by ID, channel, or authenticated user.
+
+```bash
+youtube-data-cli playlists --channel-id UCxxxxxxxxxxxxxx
+youtube-data-cli playlists --mine              # your playlists (OAuth required)
+youtube-data-cli playlists --id PLxxxxxxxxxxxxxx
+```
+
+Options:
+- `--id <id>` -- playlist ID(s), comma-separated
+- `--channel-id <id>` -- channel ID
+- `--mine` -- list your playlists (OAuth required)
+- `--part <parts>` -- parts to include (default: `snippet,contentDetails`)
+- `--max-results <n>` -- max results 1-50 (default: `25`)
+- `--page-token <token>` -- pagination token
+
+### playlists-insert
+
+Create a new playlist (OAuth required).
+
+```bash
+youtube-data-cli playlists-insert --title "My Playlist"
+youtube-data-cli playlists-insert --title "Public Playlist" --description "A great playlist" --privacy public
+```
+
+Options:
+- `--title <title>` -- playlist title (required)
+- `--description <desc>` -- playlist description
+- `--privacy <status>` -- `public`, `private`, `unlisted` (default: `private`)
+- `--default-language <lang>` -- default language (ISO 639-1)
+
+### playlists-update
+
+Update a playlist (OAuth required).
+
+```bash
+youtube-data-cli playlists-update --id PLxxxxxxxxxxxxxx --title "Updated Title"
+youtube-data-cli playlists-update --id PLxxxxxxxxxxxxxx --title "New Title" --privacy public
+```
+
+Options:
+- `--id <id>` -- playlist ID (required)
+- `--title <title>` -- playlist title (required)
+- `--description <desc>` -- playlist description
+- `--privacy <status>` -- `public`, `private`, `unlisted`
+- `--default-language <lang>` -- default language (ISO 639-1)
+
+### playlists-delete
+
+Delete a playlist (OAuth required).
+
+```bash
+youtube-data-cli playlists-delete --id PLxxxxxxxxxxxxxx
+```
+
+Options:
+- `--id <id>` -- playlist ID (required)
+
+### playlist-items
+
+List items in a playlist.
+
+```bash
+youtube-data-cli playlist-items --playlist-id PLxxxxxxxxxxxxxx
+youtube-data-cli playlist-items --playlist-id PLxxxxxxxxxxxxxx --max-results 50
+```
+
+Options:
+- `--playlist-id <id>` -- playlist ID (required)
+- `--part <parts>` -- parts to include (default: `snippet,contentDetails`)
+- `--max-results <n>` -- max results 1-50 (default: `25`)
+- `--page-token <token>` -- pagination token
+- `--video-id <id>` -- filter by video ID
+
+### playlist-items-insert
+
+Add a video to a playlist (OAuth required).
+
+```bash
+youtube-data-cli playlist-items-insert --playlist-id PLxxxxxxxxxxxxxx --video-id dQw4w9WgXcQ
+youtube-data-cli playlist-items-insert --playlist-id PLxxxxxxxxxxxxxx --video-id dQw4w9WgXcQ --position 0
+```
+
+Options:
+- `--playlist-id <id>` -- playlist ID (required)
+- `--video-id <id>` -- video ID to add (required)
+- `--position <n>` -- position in the playlist (0-based)
+
+### playlist-items-update
+
+Update a playlist item position (OAuth required).
+
+```bash
+youtube-data-cli playlist-items-update --id ITEM_ID --playlist-id PLxxxxxxxxxxxxxx --video-id dQw4w9WgXcQ --position 3
+```
+
+Options:
+- `--id <id>` -- playlist item ID (required)
+- `--playlist-id <id>` -- playlist ID (required)
+- `--video-id <id>` -- video ID (required)
+- `--position <n>` -- new position (0-based)
+
+### playlist-items-delete
+
+Remove an item from a playlist (OAuth required).
+
+```bash
+youtube-data-cli playlist-items-delete --id ITEM_ID
+```
+
+Options:
+- `--id <id>` -- playlist item ID (required)
+
+### comment-threads
+
+List comment threads for a video, channel, or by ID.
+
+```bash
+youtube-data-cli comment-threads --video-id dQw4w9WgXcQ
+youtube-data-cli comment-threads --video-id dQw4w9WgXcQ --order time --max-results 50
+youtube-data-cli comment-threads --channel-id UCxxxxxxxxxxxxxx
+youtube-data-cli comment-threads --video-id dQw4w9WgXcQ --search-terms "great video"
+```
+
+Options:
+- `--video-id <id>` -- video ID
+- `--channel-id <id>` -- channel ID
+- `--id <id>` -- comment thread ID(s), comma-separated
+- `--part <parts>` -- parts to include (default: `snippet,replies`)
+- `--max-results <n>` -- max results 1-100 (default: `20`)
+- `--page-token <token>` -- pagination token
+- `--order <order>` -- `time` or `relevance` (default: `relevance`)
+- `--search-terms <q>` -- filter by search terms
+
+### comment-threads-insert
+
+Post a top-level comment on a video (OAuth required).
+
+```bash
+youtube-data-cli comment-threads-insert --video-id dQw4w9WgXcQ --text "Great video!"
+```
+
+Options:
+- `--video-id <id>` -- video ID (required)
+- `--text <text>` -- comment text (required)
+
+### comments
+
+List replies to a comment thread.
+
+```bash
+youtube-data-cli comments --parent-id COMMENT_ID
+```
+
+Options:
+- `--parent-id <id>` -- parent comment ID (required)
+- `--part <parts>` -- parts to include (default: `snippet`)
+- `--max-results <n>` -- max results 1-100 (default: `20`)
+- `--page-token <token>` -- pagination token
+
+### comments-insert
+
+Reply to a comment (OAuth required).
+
+```bash
+youtube-data-cli comments-insert --parent-id COMMENT_ID --text "Thanks for the feedback!"
+```
+
+Options:
+- `--parent-id <id>` -- parent comment ID (required)
+- `--text <text>` -- reply text (required)
+
+### comments-update
+
+Update a comment (OAuth required).
+
+```bash
+youtube-data-cli comments-update --id COMMENT_ID --text "Updated comment text"
+```
+
+Options:
+- `--id <id>` -- comment ID (required)
+- `--text <text>` -- updated text (required)
+
+### comments-delete
+
+Delete a comment (OAuth required).
+
+```bash
+youtube-data-cli comments-delete --id COMMENT_ID
+```
+
+Options:
+- `--id <id>` -- comment ID (required)
+
+### subscriptions
+
+List subscriptions.
+
+```bash
+youtube-data-cli subscriptions --mine                   # your subscriptions (OAuth required)
+youtube-data-cli subscriptions --channel-id UCxxxxxxxxxxxxxx
+youtube-data-cli subscriptions --mine --order alphabetical --max-results 50
+youtube-data-cli subscriptions --mine --for-channel-id UCxxxxxxxxxxxxxx
+```
+
+Options:
+- `--channel-id <id>` -- list subscriptions for a channel
+- `--id <id>` -- subscription ID(s), comma-separated
+- `--mine` -- list your subscriptions (OAuth required)
+- `--part <parts>` -- parts to include (default: `snippet,contentDetails`)
+- `--max-results <n>` -- max results 1-50 (default: `25`)
+- `--page-token <token>` -- pagination token
+- `--order <order>` -- `alphabetical`, `relevance`, `unread`
+- `--for-channel-id <id>` -- filter by subscribed channel ID(s)
+
+### subscriptions-insert
+
+Subscribe to a channel (OAuth required).
+
+```bash
+youtube-data-cli subscriptions-insert --channel-id UCxxxxxxxxxxxxxx
+```
+
+Options:
+- `--channel-id <id>` -- channel ID to subscribe to (required)
+
+### subscriptions-delete
+
+Unsubscribe (OAuth required).
+
+```bash
+youtube-data-cli subscriptions-delete --id SUBSCRIPTION_ID
+```
+
+Options:
+- `--id <id>` -- subscription ID (required)
+
+## Error output
+
+Errors are written to stderr as JSON with an `error` field and a non-zero exit code:
+
+```json
+{"error": "OAuth credentials required (client_id, client_secret, refresh_token). API key alone is not sufficient for this command."}
+```
+
+## API Reference
+
+- YouTube Data API v3: https://developers.google.com/youtube/v3
+
+## Related
+
+- [youtube-analytics-cli](https://github.com/Bin-Huang/youtube-analytics-cli) -- YouTube Analytics CLI for AI agents (and humans)
+- [google-analytics-cli](https://github.com/Bin-Huang/google-analytics-cli) -- Google Analytics CLI for AI agents (and humans)
+- [google-search-console-cli](https://github.com/Bin-Huang/google-search-console-cli) -- Google Search Console CLI for AI agents (and humans)
+- [x-analytics-cli](https://github.com/Bin-Huang/x-analytics-cli) -- X Analytics CLI for AI agents (and humans)
+
+## License
+
+Apache-2.0
