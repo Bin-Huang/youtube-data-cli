@@ -89,7 +89,7 @@ Get, upload, update, or delete videos.
 ```bash
 youtube-data-cli videos dQw4w9WgXcQ
 youtube-data-cli videos-insert --file video.mp4 --title "My Video" --privacy private
-youtube-data-cli videos-update --id VID --title "Updated Title" --tags "a,b"
+youtube-data-cli videos-update --id VID --title "Updated Title" --category-id 22 --tags "a,b"
 youtube-data-cli videos-delete --id VID
 ```
 

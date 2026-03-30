@@ -7,7 +7,7 @@ export function registerMemberCommands(program: Command): void {
   program
     .command("members")
     .description("List channel members (OAuth required)")
-    .option("--mode <mode>", "Filter mode (listMembers, updates)", "listMembers")
+    .option("--mode <mode>", "Filter mode (all_current, updates)", "all_current")
     .option("--max-results <n>", "Max results (1-1000)", "25")
     .option("--page-token <token>", "Pagination token")
     .option("--has-access-to-level <id>", "Filter by membership level ID")

@@ -64,9 +64,9 @@ export function registerVideoCommands(program: Command): void {
     .description("Update video metadata (OAuth required)")
     .requiredOption("--id <id>", "Video ID")
     .requiredOption("--title <title>", "Video title")
+    .requiredOption("--category-id <id>", "Video category ID (required by YouTube API when updating snippet)")
     .option("--description <desc>", "Video description")
     .option("--tags <tags>", "Comma-separated tags")
-    .option("--category-id <id>", "Video category ID")
     .option("--privacy <status>", "Privacy status (public, private, unlisted)")
     .option("--default-language <lang>", "Default language (ISO 639-1)")
     .action(async (opts) => {
@@ -74,10 +74,10 @@ export function registerVideoCommands(program: Command): void {
         const creds = loadCredentials(program.opts().credentials);
         const snippet: Record<string, unknown> = {
           title: opts.title,
+          categoryId: opts.categoryId,
         };
         if (opts.description !== undefined) snippet.description = opts.description;
         if (opts.tags) snippet.tags = opts.tags.split(",").map((t: string) => t.trim());
-        if (opts.categoryId) snippet.categoryId = opts.categoryId;
         if (opts.defaultLanguage) snippet.defaultLanguage = opts.defaultLanguage;
 
         const body: Record<string, unknown> = { id: opts.id, snippet };

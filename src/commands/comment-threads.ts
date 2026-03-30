@@ -24,7 +24,7 @@ export function registerCommentThreadCommands(program: Command): void {
           order: opts.order,
         };
         if (opts.videoId) params.videoId = opts.videoId;
-        else if (opts.channelId) params.channelId = opts.channelId;
+        else if (opts.channelId) params.allThreadsRelatedToChannelId = opts.channelId;
         else if (opts.id) params.id = opts.id;
         else {
           fatal("One of --video-id, --channel-id, or --id is required.");

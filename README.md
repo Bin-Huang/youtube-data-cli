@@ -458,16 +458,16 @@ Options:
 Update video metadata (OAuth required).
 
 ```bash
-youtube-data-cli videos-update --id VIDEO_ID --title "Updated Title"
-youtube-data-cli videos-update --id VIDEO_ID --title "Title" --description "Desc" --tags "a,b" --privacy public
+youtube-data-cli videos-update --id VIDEO_ID --title "Updated Title" --category-id 22
+youtube-data-cli videos-update --id VIDEO_ID --title "Title" --category-id 22 --description "Desc" --tags "a,b" --privacy public
 ```
 
 Options:
 - `--id <id>` -- video ID (required)
 - `--title <title>` -- video title (required)
+- `--category-id <id>` -- video category ID (required, use `video-categories` to list IDs)
 - `--description <desc>` -- video description
 - `--tags <tags>` -- comma-separated tags
-- `--category-id <id>` -- video category ID
 - `--privacy <status>` -- `public`, `private`, `unlisted`
 - `--default-language <lang>` -- default language (ISO 639-1)
 
