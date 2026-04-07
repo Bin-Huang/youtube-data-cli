@@ -1,7 +1,7 @@
 {
   "name": "youtube-data-cli",
   "version": "1.0.0",
-  "description": "YouTube Data API CLI for AI agents",
+  "description": "YouTube Data API CLI & Skills for AI agents",
   "type": "module",
   "bin": {
     "youtube-data-cli": "dist/index.js"

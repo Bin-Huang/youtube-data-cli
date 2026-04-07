@@ -28,7 +28,7 @@ const program = new Command();
 
 program
   .name("youtube-data-cli")
-  .description("YouTube Data API CLI for AI agents")
+  .description("YouTube Data API CLI & Skills for AI agents")
   .version(version)
   .option("--format <format>", "Output format", "json")
   .option("--credentials <path>", "Path to credentials JSON file")

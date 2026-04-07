@@ -1,6 +1,6 @@
 # youtube-data-cli
 
-YouTube Data API CLI for AI agents (and humans). Full coverage of the YouTube Data API v3: search, channels, videos, playlists, comments, subscriptions, captions, thumbnails, and more.
+YouTube Data API CLI & Skills for AI agents (and humans). Full coverage of the YouTube Data API v3: search, channels, videos, playlists, comments, subscriptions, captions, thumbnails, and more.
 
 **Works with:** OpenClaw, Claude Code, Cursor, Codex, and any agent that can run shell commands.
 
@@ -729,10 +729,10 @@ Errors are written to stderr as JSON with an `error` field and a non-zero exit c
 
 ## Related
 
-- [youtube-analytics-cli](https://github.com/Bin-Huang/youtube-analytics-cli) -- YouTube Analytics CLI for AI agents (and humans)
-- [google-analytics-cli](https://github.com/Bin-Huang/google-analytics-cli) -- Google Analytics CLI for AI agents (and humans)
-- [google-search-console-cli](https://github.com/Bin-Huang/google-search-console-cli) -- Google Search Console CLI for AI agents (and humans)
-- [x-analytics-cli](https://github.com/Bin-Huang/x-analytics-cli) -- X Analytics CLI for AI agents (and humans)
+- [youtube-analytics-cli](https://github.com/Bin-Huang/youtube-analytics-cli) -- YouTube Analytics CLI & Skills for AI agents (and humans)
+- [google-analytics-cli](https://github.com/Bin-Huang/google-analytics-cli) -- Google Analytics CLI & Skills for AI agents (and humans)
+- [google-search-console-cli](https://github.com/Bin-Huang/google-search-console-cli) -- Google Search Console CLI & Skills for AI agents (and humans)
+- [x-analytics-cli](https://github.com/Bin-Huang/x-analytics-cli) -- X Analytics CLI & Skills for AI agents (and humans)
 
 ## License
 
